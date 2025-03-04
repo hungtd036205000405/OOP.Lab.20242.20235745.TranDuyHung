@@ -1,72 +1,81 @@
 package Hello;
-import java.util.Scanner;
+import java.util.*;
 
 public class DaysInMonth {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int year;
-        String monthInput;
-        int month = -1;
-
-        // Danh sách tháng hợp lệ
-        String[] months = {
-            "January", "Jan.", "Jan", "1",
-            "February", "Feb.", "Feb", "2",
-            "March", "Mar.", "Mar", "3",
-            "April", "Apr.", "Apr", "4",
-            "May", "5",
-            "June", "Jun.", "Jun", "6",
-            "July", "Jul.", "Jul", "7",
-            "August", "Aug.", "Aug", "8",
-            "September", "Sept.", "Sep", "9",
-            "October", "Oct.", "Oct", "10",
-            "November", "Nov.", "Nov", "11",
-            "December", "Dec.", "Dec", "12"
+        Map<String, Integer> monthMap = new HashMap<>();
+        
+        // Danh sách tháng và số tương ứng
+        String[][] months = {
+            {"January", "Jan.", "Jan", "1"},
+            {"February", "Feb.", "Feb", "2"},
+            {"March", "Mar.", "Mar", "3"},
+            {"April", "Apr.", "Apr", "4"},
+            {"May", "May", "May", "5"},
+            {"June", "Jun.", "Jun", "6"},
+            {"July", "Jul.", "Jul", "7"},
+            {"August", "Aug.", "Aug", "8"},
+            {"September", "Sept.", "Sep", "9"},
+            {"October", "Oct.", "Oct", "10"},
+            {"November", "Nov.", "Nov", "11"},
+            {"December", "Dec.", "Dec", "12"}
         };
 
-        // Số ngày trong năm thường
-        int[] daysInMonth = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-        // Nhập tháng
-        while (month == -1) {
-            System.out.print("Nhập tháng (tên đầy đủ, viết tắt hoặc số): ");
-            monthInput = scanner.next();
-
-            // Kiểm tra tháng hợp lệ
-            for (int i = 0; i < months.length; i++) {
-                if (monthInput.equalsIgnoreCase(months[i])) {
-                    month = (i / 4) + 1;
-                    break;
-                }
-            }
-
-            if (month == -1) {
-                System.out.println("Tháng không hợp lệ, vui lòng nhập lại.");
+        // Gán giá trị vào HashMap để kiểm tra nhanh
+        for (int i = 0; i < months.length; i++) {
+            for (String alias : months[i]) {
+                monthMap.put(alias.toLowerCase(), i + 1);
             }
         }
 
-        // Nhập năm
-        while (true) {
-            System.out.print("Nhập năm (số nguyên dương): ");
+        int month = -1, year = -1;
+
+        // Nhập tháng hợp lệ
+        while (month == -1) {
+            System.out.print("Enter a month (name, abbreviation, or number): ");
+            String input = scanner.nextLine().trim().toLowerCase();
+            if (monthMap.containsKey(input)) {
+                month = monthMap.get(input);
+            } else {
+                System.out.println("Invalid month! Please enter again.");
+            }
+        }
+
+        // Nhập năm hợp lệ
+        while (year < 0) {
+            System.out.print("Enter a valid year: ");
             if (scanner.hasNextInt()) {
                 year = scanner.nextInt();
-                if (year >= 0) {
-                    break;
+                if (year < 0) {
+                    System.out.println("Year must be non-negative.");
+                    year = -1;
                 }
             } else {
-                scanner.next(); // Xóa dữ liệu nhập sai
+                System.out.println("Invalid year! Please enter a number.");
+                scanner.next();
             }
-            System.out.println("Năm không hợp lệ, vui lòng nhập lại.");
         }
 
         // Kiểm tra năm nhuận
         boolean isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-        if (isLeapYear && month == 2) {
-            System.out.println("Tháng " + month + " năm " + year + " có 29 ngày.");
-        } else {
-            System.out.println("Tháng " + month + " năm " + year + " có " + daysInMonth[month - 1] + " ngày.");
+        int days = 0;
+
+        // Sửa switch-case để tương thích với Java cũ
+        switch (month) {
+            case 1: case 3: case 5: case 7: case 8: case 10: case 12:
+                days = 31;
+                break;
+            case 4: case 6: case 9: case 11:
+                days = 30;
+                break;
+            case 2:
+                days = isLeapYear ? 29 : 28;
+                break;
+            default:
+                days = 0; // Không xảy ra vì đã kiểm tra đầu vào
         }
 
-        scanner.close();
+        System.out.println("Month " + month + " of year " + year + " has " + days + " days.");
     }
 }
