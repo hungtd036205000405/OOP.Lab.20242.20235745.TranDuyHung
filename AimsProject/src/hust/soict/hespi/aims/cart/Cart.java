@@ -65,7 +65,7 @@ public class Cart {
         return itemsOrdered;
     }
 
-    // ===== 🎯 THÊM: Sắp xếp =====
+    //  Sắp xếp
     public void sortByTitleCost() {
         Collections.sort(itemsOrdered, Media.COMPARE_BY_TITLE_COST);
     }

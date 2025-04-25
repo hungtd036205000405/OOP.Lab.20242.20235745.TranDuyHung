@@ -30,7 +30,6 @@ public class CompactDisc extends Disc implements Playable {
             System.out.println("Track already exists: " + track.getTitle());
         }
     }
-
     //  Xoá bài hát (nếu tồn tại)
     public void removeTrack(Track track) {
         if (tracks.remove(track)) {
@@ -39,7 +38,6 @@ public class CompactDisc extends Disc implements Playable {
             System.out.println("Track not found: " + track.getTitle());
         }
     }
-
     //  Độ dài CD là tổng độ dài bài hát
     @Override
     public int getLength() {
@@ -61,8 +59,7 @@ public class CompactDisc extends Disc implements Playable {
             track.play();
         }
     }
-
-    // toString đẹp + xuống dòng
+    // toString
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
