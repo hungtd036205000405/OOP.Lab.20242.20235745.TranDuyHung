@@ -189,11 +189,14 @@ public class Aims {
 
                     switch (type) {
                         case 1 -> {
+                            System.out.print("Enter id: ");
+                            int id = scanner.nextInt();
                             System.out.print("Enter director: ");
                             String director = scanner.nextLine();
                             System.out.print("Enter length: ");
                             int length = Integer.parseInt(scanner.nextLine());
-                            media = new DigitalVideoDisc(title, category, director, length, cost);
+                            media = new DigitalVideoDisc(id, title, category, director, length, cost);
+
                         }
                         case 2 -> {
                             media = new Book(0, title, category, cost);

@@ -8,8 +8,8 @@ public class StoreTest {
         Store myStore = new Store();
 
         // Tạo các DVD
-        DigitalVideoDisc dvd1 = new DigitalVideoDisc("The Lion King", "Animation", "Roger Allers", 87, 19.95f);
-        DigitalVideoDisc dvd2 = new DigitalVideoDisc("Aladdin", "Animation", "Guy Ritchie", 90, 24.99f);
+        DigitalVideoDisc dvd1 = new DigitalVideoDisc(5, "The Lion King", "Animation", "Roger Allers", 87, 19.95f);
+        DigitalVideoDisc dvd2 = new DigitalVideoDisc(7, "Aladdin", "Animation", "Guy Ritchie", 90, 24.99f);
 
         // Thêm vào cửa hàng
         myStore.addMedia(dvd1);

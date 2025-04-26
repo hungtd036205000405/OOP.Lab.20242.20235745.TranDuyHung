@@ -23,12 +23,6 @@ public class Cart {
         }
     }
 
-    // Thêm nhiều media (varargs)
-    public void addMedia(Media... mediaList) {
-        for (Media media : mediaList) {
-            addMedia(media);
-        }
-    }
 
     // Xoá media
     public void removeMedia(Media media) {
