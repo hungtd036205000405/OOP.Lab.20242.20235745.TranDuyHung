@@ -1,4 +1,4 @@
-package OrtherProject.test.garbage;
+package OrtherProject.garbage.garbage;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,7 +21,7 @@ public class NoGarbage {
             System.out.println("Execution time (optimized): " + (endTime - startTime) + "ms");
 
         } catch (IOException e) {
-            System.err.println("❌ Không thể đọc file: " + filename);
+            System.err.println(" Không thể đọc file: " + filename);
             System.err.println("Chi tiết lỗi: " + e.getMessage());
         }
     }

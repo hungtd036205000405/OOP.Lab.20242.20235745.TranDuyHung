@@ -1,4 +1,4 @@
-package OrtherProject.test.garbage;
+package OrtherProject.garbage.garbage;
 
 import java.util.Random;
 
