@@ -1,6 +1,6 @@
-package hust.soict.hespi.aims.cart;
+package hust.soict.hespi.swing.cart;
 
-import hust.soict.hespi.aims.media.Media;
+import hust.soict.hespi.swing.media.Media;
 import java.util.ArrayList;
 import java.util.Collections;
 

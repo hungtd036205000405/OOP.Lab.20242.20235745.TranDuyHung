@@ -1,7 +1,7 @@
-package hust.soict.hespi.aims.cd;
+package hust.soict.hespi.swing.cd;
 
-import hust.soict.hespi.aims.disc.Disc;
-import hust.soict.hespi.aims.media.Playable;
+import hust.soict.hespi.swing.disc.Disc;
+import hust.soict.hespi.swing.media.Playable;
 
 import java.util.ArrayList;
 

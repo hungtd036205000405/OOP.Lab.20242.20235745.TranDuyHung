@@ -1,20 +1,20 @@
-package hust.soict.hespi.aims.screen.manager;
+package hust.soict.hespi.swing.screen.manager;
 
-import hust.soict.hespi.aims.store.Store;
-import hust.soict.hespi.aims.disc.DigitalVideoDisc;
+import hust.soict.hespi.swing.store.Store;
+import hust.soict.hespi.swing.book.Book;  // Giả sử bạn có lớp Book
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class AddDigitalVideoDiscToStoreScreen extends AddItemToStoreScreen {
+public class AddBookToStoreScreen extends AddItemToStoreScreen {
 
     private JTextField titleField;  // Trường nhập tên
     private JTextField priceField;  // Trường nhập giá
 
-    public AddDigitalVideoDiscToStoreScreen(Store store) {
-        super(store, "Add DVD");  // Gọi constructor của lớp cha và đặt tiêu đề cho cửa sổ
+    public AddBookToStoreScreen(Store store) {
+        super(store, "Add Book");  // Gọi constructor của lớp cha và đặt tiêu đề cho cửa sổ
     }
 
     @Override
@@ -26,7 +26,7 @@ public class AddDigitalVideoDiscToStoreScreen extends AddItemToStoreScreen {
         // Tạo các thành phần nhập liệu cho Title
         JPanel titlePanel = new JPanel();
         titlePanel.setLayout(new FlowLayout(FlowLayout.LEFT));  // Sử dụng FlowLayout cho title
-        titlePanel.add(new JLabel("Enter DVD Title:"));
+        titlePanel.add(new JLabel("Enter Book Title:"));
         titleField = new JTextField(30);  // Chiều rộng cho ô nhập liệu
         titleField.setPreferredSize(new Dimension(400, 40));  // Tăng chiều cao cho ô nhập liệu
         titlePanel.add(titleField);
@@ -74,7 +74,7 @@ public class AddDigitalVideoDiscToStoreScreen extends AddItemToStoreScreen {
         return panel;
     }
 
-    // Phương thức thêm DVD vào cửa hàng
+    // Phương thức thêm Book vào cửa hàng
     private void addItem() {
         String title = titleField.getText();
         double price;
@@ -85,14 +85,14 @@ public class AddDigitalVideoDiscToStoreScreen extends AddItemToStoreScreen {
             return;
         }
 
-        // Tạo DVD mới và thêm vào cửa hàng
-        DigitalVideoDisc dvd = new DigitalVideoDisc(title, (float) price);  // Giả sử bạn có lớp DVD
-        store.addMedia(dvd);  // Thêm DVD vào cửa hàng
+        // Tạo Book mới và thêm vào cửa hàng
+        Book book = new Book(title, (float) price);  // Giả sử bạn có lớp Book
+        store.addMedia(book);  // Thêm Book vào cửa hàng
 
         // Hiển thị thông báo thành công
-        JOptionPane.showMessageDialog(this, "DVD added successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Book added successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
 
-        // Xóa các trường nhập liệu sau khi thêm DVD
+        // Xóa các trường nhập liệu sau khi thêm Book
         titleField.setText("");
         priceField.setText("");
     }
@@ -100,6 +100,6 @@ public class AddDigitalVideoDiscToStoreScreen extends AddItemToStoreScreen {
     // Phương thức quay lại màn hình "View Store"
     private void backToViewStore() {
         new StoreManagerScreen(store);  // Quay lại màn hình Store Manager (hoặc bạn có thể chuyển sang màn hình khác)
-        this.setVisible(false);  // Ẩn màn hình Add DVD
+        this.setVisible(false);  // Ẩn màn hình Add Book
     }
 }

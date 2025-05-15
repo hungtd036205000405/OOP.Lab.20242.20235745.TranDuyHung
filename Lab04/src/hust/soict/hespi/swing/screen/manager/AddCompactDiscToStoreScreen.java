@@ -1,7 +1,7 @@
-package hust.soict.hespi.aims.screen.manager;
+package hust.soict.hespi.swing.screen.manager;
 
-import hust.soict.hespi.aims.store.Store;
-import hust.soict.hespi.aims.cd.CompactDisc;  // Giả sử bạn có lớp CompactDisc
+import hust.soict.hespi.swing.store.Store;
+import hust.soict.hespi.swing.cd.CompactDisc;  // Giả sử bạn có lớp CompactDisc
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,7 +1,7 @@
-package hust.soict.hespi.aims.disc;
+package hust.soict.hespi.swing.disc;
 
-import hust.soict.hespi.aims.media.Media;
-import hust.soict.hespi.aims.media.Playable;
+import hust.soict.hespi.swing.media.Media;
+import hust.soict.hespi.swing.media.Playable;
 
 public class DigitalVideoDisc extends Media implements Playable {
     private String director;

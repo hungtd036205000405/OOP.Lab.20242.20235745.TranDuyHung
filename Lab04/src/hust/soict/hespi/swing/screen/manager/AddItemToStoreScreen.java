@@ -1,10 +1,10 @@
-package hust.soict.hespi.aims.screen.manager;
+package hust.soict.hespi.swing.screen.manager;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import hust.soict.hespi.aims.store.Store;
+import hust.soict.hespi.swing.store.Store;
 public abstract class AddItemToStoreScreen extends JFrame {
     protected Store store;      // Đối tượng Store chứa danh sách các sản phẩm
 

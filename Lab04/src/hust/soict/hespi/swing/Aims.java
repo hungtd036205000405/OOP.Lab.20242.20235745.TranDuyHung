@@ -1,9 +1,9 @@
-package hust.soict.hespi.aims;
+package hust.soict.hespi.swing;
 
-import hust.soict.hespi.aims.book.Book;
-import hust.soict.hespi.aims.disc.DigitalVideoDisc;
-import hust.soict.hespi.aims.store.Store;
-import hust.soict.hespi.aims.screen.manager.StoreManagerScreen;
+import hust.soict.hespi.swing.book.Book;
+import hust.soict.hespi.swing.disc.DigitalVideoDisc;
+import hust.soict.hespi.swing.store.Store;
+import hust.soict.hespi.swing.screen.manager.StoreManagerScreen;
 
 public class Aims {
     public static void main(String[] args) {

@@ -1,6 +1,6 @@
-package hust.soict.hespi.aims.disc;
+package hust.soict.hespi.swing.disc;
 
-import hust.soict.hespi.aims.media.Media;
+import hust.soict.hespi.swing.media.Media;
 
 public class Disc extends Media {
     // lop cha cua 2 lop con : CD va DVD

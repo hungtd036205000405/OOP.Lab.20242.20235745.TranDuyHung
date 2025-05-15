@@ -1,6 +1,6 @@
-package hust.soict.hespi.aims.book;
+package hust.soict.hespi.swing.book;
 
-import hust.soict.hespi.aims.media.Media;
+import hust.soict.hespi.swing.media.Media;
 import java.util.ArrayList;
 
 public class Book extends Media {

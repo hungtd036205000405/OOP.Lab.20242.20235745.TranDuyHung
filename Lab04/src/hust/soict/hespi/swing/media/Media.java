@@ -1,4 +1,4 @@
-package hust.soict.hespi.aims.media;
+package hust.soict.hespi.swing.media;
 
 import java.util.Comparator;
 import java.util.Objects;
