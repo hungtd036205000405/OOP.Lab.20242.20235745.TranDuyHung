@@ -1,9 +1,11 @@
 package com.example.shoestore.controller;
 
+import com.example.shoestore.dto.request.ApiResponse;
 import com.example.shoestore.dto.request.UserCreateRequest;
 import com.example.shoestore.dto.request.UserUpdateRequest;
 import com.example.shoestore.entity.User;
 import com.example.shoestore.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +18,11 @@ public class UserController {
     public UserService userService;
 
     @PostMapping
-    User createUser(@RequestBody UserCreateRequest request){// Anotatoin @RequestBody để map dữ liệu từ request body vào đối tượng UserCreateRequest
-        return userService.createUser(request);
+    ApiResponse<User> createUser(@RequestBody @Valid UserCreateRequest request){// Anotatoin @RequestBody để map dữ liệu từ request body vào đối tượng UserCreateRequest
+        ApiResponse<User> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.createUser(request));
+
+        return apiResponse;
     }
 
     @GetMapping
