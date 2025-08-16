@@ -45,12 +45,22 @@ public class AuthenticationService {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrrorCode.USER_NOT_EXISTED));
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);// tạo để dùng hàm match kiểm tra 2 passwwork
-        boolean authenticated =  passwordEncoder.matches(request.getPassword(), user.getPassword());
+        boolean authenticated = false;
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
-        if(!authenticated) {
-            throw new AppException(ErrrorCode.UNCATEGORIZED_EXCEPTION);
+//        if (user.getPassword().startsWith("$2a$")) {
+//            // Nếu là password đã mã hóa (bcrypt)
+//            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+//            authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+//        } else {
+//            // Nếu là plain text
+//            // authenticated = request.getPassword().equals(user.getPassword());
+//        }
+        if (!authenticated) {
+            throw new AppException(ErrrorCode.INVALID_PASSWORD); // nên tạo code lỗi rõ ràng hơn
         }
+
         // Nếu xác thực thành công, tạo JWT token
         var token = generateToken(request.getUsername());
         return AuthenticationResponse.builder()

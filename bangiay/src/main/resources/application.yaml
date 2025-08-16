@@ -3,16 +3,17 @@ server:
   servlet:
     context-path: /identity
 
-jpa:
-  hibernate:
-    ddl-auto: update
-    show-sql: true
 
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/shoestores
     username: root
     password: 22102005
+
+jpa:
+  hibernate:
+    ddl-auto: update
+    show-sql: true
 
 jwt :
   signerKey : "cud1yALGVgbBvbHgSwe3Gn+sIHi4/0kd5CxTquhNZ+O1Q6++lNmvzZFlKUzzMtWJ"

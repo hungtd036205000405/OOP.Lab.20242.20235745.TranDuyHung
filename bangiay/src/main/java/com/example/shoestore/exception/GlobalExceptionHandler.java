@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(ErrrorCode.UNCATEGORIZED_EXCEPTION.getCode());
-        apiResponse.setMessage("Internal Server Error: " + ErrrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
+        apiResponse.setMessage("Internal Server Error: " + exception.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
