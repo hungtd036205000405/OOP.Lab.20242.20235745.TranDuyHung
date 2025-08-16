@@ -1,12 +1,10 @@
 package com.example.shoestore.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
-
+@Data
 @Entity
 public class User {
     @Id
@@ -17,6 +15,13 @@ public class User {
     private String firstName;
     private String lastName;
     private LocalDate dob;
+
+    // Quan hệ 1-1 với Cart // Mỗi User có một Cart
+    // CascadeType.ALL: Khi thao tác với User, sẽ tự động thao tác với Cart
+    // orphanRemoval = true: Khi xóa User, Cart cũng sẽ bị xóa theo
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Cart cart;
+
 
     public String getId() {
         return id;

@@ -2,6 +2,7 @@ package com.example.shoestore.service;
 
 import com.example.shoestore.dto.request.UserCreateRequest;
 import com.example.shoestore.dto.request.UserUpdateRequest;
+import com.example.shoestore.entity.Cart;
 import com.example.shoestore.entity.User;
 // import com.example.shoestore.mapper.UserMapper;
 import com.example.shoestore.exception.AppException;
@@ -20,23 +21,30 @@ public class UserService {
 
     //@Autowired
     //private UserMapper userMapper;
-    public User createUser(UserCreateRequest request){
-        //User user = userMapper.toUser(request);
-     //thay vì sử dụng userMapper, ta có thể trực tiếp tạo đối tượng User từ request
-        User user = new User();
+    public User createUser(UserCreateRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("ErrrorCode.USER_EXISTED");
         }
+
+        // Tạo user
+        User user = new User();
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setDob(request.getDob());
-        PasswordEncoder  passwordEncoder = new BCryptPasswordEncoder(10);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));// set password đã mã hóa
-        return userRepository.save(user);
 
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        // Tạo giỏ hàng cho user
+        Cart cart = new Cart();
+        cart.setUser(user);
+        user.setCart(cart); // liên kết 2 chiều
+
+        // Lưu user => cascade ALL sẽ lưu luôn Cart
+        return userRepository.save(user);
     }
+
     public List<User> getUsers() {
         return userRepository.findAll();
     }
