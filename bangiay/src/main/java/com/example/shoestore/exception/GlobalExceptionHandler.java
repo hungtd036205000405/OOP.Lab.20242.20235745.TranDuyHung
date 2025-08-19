@@ -1,49 +1,65 @@
 package com.example.shoestore.exception;
 
-import com.example.shoestore.dto.request.ApiResponse;
+import com.example.shoestore.dto.response.ApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(value = Exception.class)// nếu AppExceprion không bắt được thì sẽ đến Exception xử lí ra lỗi 9999
-    ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    // Xử lý AppException (các exception nghiệp vụ)
+    @ExceptionHandler(value = AppException.class)
+    public ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
+        ErrrorCode errorCode = exception.getErrorCode();
+        log.error("AppException occurred: {}", errorCode.getMessage(), exception);
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(errorCode.getMessage());
+
+        // Trả về 404 nếu là lỗi không tìm thấy
+        if(errorCode == ErrrorCode.CART_NOT_FOUND || errorCode == ErrrorCode.PRODUCT_NOT_IN_CART) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+        }
+
+        // Mặc định trả về 400 cho các lỗi nghiệp vụ khác
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    // Xử lý validation exception
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
+        String enumKey = exception.getFieldError().getDefaultMessage();
+        ErrrorCode errorCode = ErrrorCode.INVALID_KEY;
+
+        try {
+            errorCode = ErrrorCode.valueOf(enumKey);
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid error code: {}", enumKey);
+        }
+
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(errorCode.getMessage());
+
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    // Xử lý các exception không xác định
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<ApiResponse> handlingException(Exception exception) {
+        log.error("Unexpected exception occurred", exception);
+
         ApiResponse apiResponse = new ApiResponse();
         apiResponse.setCode(ErrrorCode.UNCATEGORIZED_EXCEPTION.getCode());
         apiResponse.setMessage("Internal Server Error: " + exception.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
-    }
 
-    @ExceptionHandler(value = AppException.class)
-    ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
-        ErrrorCode errrorCode = exception.getErrorCode();
-        ApiResponse apiResponse = new ApiResponse();
-        apiResponse.setCode(errrorCode.getCode());
-        apiResponse.setMessage(errrorCode.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
-    }
-
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
-        String enumKey = exception.getFieldError().getDefaultMessage();
-
-        ErrrorCode errrorCode = ErrrorCode.INVALID_KEY;
-
-        try {
-            errrorCode = ErrrorCode.valueOf(enumKey);
-        } catch (IllegalArgumentException e) {
-        }
-
-        ErrrorCode errorCode = errrorCode;
-
-        ApiResponse apiResponse = new ApiResponse();
-
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
-
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
     }
 }

@@ -1,14 +1,15 @@
 package com.example.shoestore.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "cart")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,12 +18,11 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Mỗi user có 1 giỏ hàng
+    @JsonBackReference
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // Liên kết với danh sách cart detail
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)//mappedBy = "cart" = nói với Hibernate rằng foreign key nằm ở bảng cart_detail, chứ không phải ở cart
-    private List<CartDetail> cartDetails;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CartDetail> cartDetails = new ArrayList<>();
 }

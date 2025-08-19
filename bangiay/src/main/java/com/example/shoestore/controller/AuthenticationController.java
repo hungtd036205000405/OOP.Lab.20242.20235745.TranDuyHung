@@ -1,6 +1,6 @@
 package com.example.shoestore.controller;
 
-import com.example.shoestore.dto.request.ApiResponse;
+import com.example.shoestore.dto.response.ApiResponse;
 import com.example.shoestore.dto.request.AuthenticationRequest;
 import com.example.shoestore.dto.request.IntrospectRequest;
 import com.example.shoestore.dto.response.AuthenticationResponse;

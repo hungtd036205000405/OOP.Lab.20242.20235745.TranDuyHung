@@ -2,64 +2,90 @@ package com.example.shoestore.service;
 
 import com.example.shoestore.dto.request.UserCreateRequest;
 import com.example.shoestore.dto.request.UserUpdateRequest;
+import com.example.shoestore.dto.response.UserResponse;
 import com.example.shoestore.entity.Cart;
 import com.example.shoestore.entity.User;
-// import com.example.shoestore.mapper.UserMapper;
+import com.example.shoestore.enums.Role;
 import com.example.shoestore.exception.AppException;
 import com.example.shoestore.exception.ErrrorCode;
+import com.example.shoestore.mapper.UserMapper;
 import com.example.shoestore.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    //@Autowired
-    //private UserMapper userMapper;
+    @Transactional
     public User createUser(UserCreateRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("ErrrorCode.USER_EXISTED");
+            throw new AppException(ErrrorCode.USER_EXISTED);
         }
 
         // Tạo user
-        User user = new User();
-        user.setUsername(request.getUsername());
+        User user = User.builder()
+                .username(request.getUsername())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .dob(request.getDob())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .roles(new ArrayList<>(List.of(Role.USER.name()))) // Gán vai trò USER
+                .build();
+
+        // Lưu user trước để tạo id
+        user = userRepository.saveAndFlush(user);
+
+        // Tạo giỏ hàng và liên kết với user
+        Cart cart = Cart.builder()
+                .user(user)
+                .cartDetails(new ArrayList<>())
+                .build();
+        user.setCart(cart); // Liên kết hai chiều
+
+        // Lưu lại user để cascade lưu cart
+        return userRepository.saveAndFlush(user);
+    }
+
+    public List<UserResponse> getUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::toUserResponse)
+                .toList();
+    }
+
+    public UserResponse getUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrrorCode.USER_NOT_EXISTED));
+        return UserMapper.toUserResponse(user);
+    }
+
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrrorCode.USER_NOT_EXISTED));
+        userRepository.delete(user); // Cascade sẽ tự động xóa cart
+    }
+
+    @Transactional
+    public UserResponse updateUser(Long userId, UserUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrrorCode.USER_NOT_EXISTED));
+
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // Mã hóa mật khẩu
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setDob(request.getDob());
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-
-        // Tạo giỏ hàng cho user
-        Cart cart = new Cart();
-        cart.setUser(user);
-        user.setCart(cart); // liên kết 2 chiều
-
-        // Lưu user => cascade ALL sẽ lưu luôn Cart
-        return userRepository.save(user);
-    }
-
-    public List<User> getUsers() {
-        return userRepository.findAll();
-    }
-
-    public User getUser(String id){
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-    }
-
-    public User updateUser(String userId, UserUpdateRequest request){
-        User user = getUser(userId);
-        user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
-        return userRepository.save(user);
-
+        User updatedUser = userRepository.save(user);
+        return UserMapper.toUserResponse(updatedUser);
     }
 }
