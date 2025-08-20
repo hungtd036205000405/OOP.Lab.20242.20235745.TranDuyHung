@@ -1,187 +1,176 @@
-// ProductDetail.jsx
-import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import api from "../services/api";
-import { Container, Row, Col, Button, Badge, Alert } from "react-bootstrap";
-import { StarFill, CartPlus } from "react-bootstrap-icons";
 
 function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [addedToCart, setAddedToCart] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
 
   useEffect(() => {
-    api
-      .get(`/products/${id}`)
-      .then((res) => {
-        // Đảm bảo price là number, tránh lỗi khi API trả về string/null
-        const fixedData = {
-          ...res.data,
-          price: res.data.price ? Number(res.data.price) : 0,
-        };
-        setProduct(fixedData);
-      })
-      .catch((err) => {
-        console.error("Lỗi khi gọi API:", err);
-        if (err.response?.status === 401) {
-          setError("Vui lòng đăng nhập để xem sản phẩm");
-        } else {
-          setError("Không thể tải thông tin sản phẩm");
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    api.get(`/products/${id}`).then((res) => setProduct(res.data.result));
   }, [id]);
 
-  const handleAddToCart = () => {
-    if (!product) return;
-    console.log("Add to cart:", product.id);
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 3000);
+  const fetchReviews = async () => {
+    try {
+      const res = await api.get(`/reviews/product/${id}`);
+      setReviews(res.data.result || []);
+    } catch (error) {
+      console.error("Lỗi lấy review:", error);
+    }
   };
 
-  if (loading) {
-    return (
-      <Container className="mt-5 text-center">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-        <p className="mt-2">Đang tải thông tin sản phẩm...</p>
-      </Container>
-    );
-  }
+  useEffect(() => {
+    fetchReviews();
+  }, [id]);
 
-  if (error) {
-    return (
-      <Container className="mt-5">
-        <Alert variant="danger" className="text-center">
-          {error}
-        </Alert>
-      </Container>
-    );
-  }
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        alert("Bạn cần đăng nhập để đánh giá!");
+        return;
+      }
 
-  if (!product) {
-    return (
-      <Container className="mt-5 text-center">
-        <Alert variant="warning">Sản phẩm không tồn tại</Alert>
-      </Container>
-    );
-  }
+      const payload = {
+        userId: parseInt(userId),
+        productId: parseInt(id),
+        rating: newReview.rating,
+        comment: newReview.comment,
+      };
+
+      await api.post("/reviews", payload);
+      setNewReview({ rating: 5, comment: "" });
+      fetchReviews();
+    } catch (error) {
+      console.error("Lỗi gửi review:", error.response?.data || error);
+    }
+  };
+
+  // 🛒 Hàm thêm vào giỏ
+  const handleAddToCart = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        alert("Bạn cần đăng nhập để thêm vào giỏ!");
+        return;
+      }
+
+      const payload = {
+        productId: parseInt(id),
+        quantity: 1, // mặc định 1 sản phẩm
+      };
+
+      await api.post(`/cart/${userId}/add`, payload);
+      alert("Đã thêm sản phẩm vào giỏ hàng!");
+    } catch (error) {
+      console.error("Lỗi thêm giỏ:", error.response?.data || error);
+      alert("Có lỗi khi thêm vào giỏ hàng!");
+    }
+  };
+
+  if (!product) return <p className="text-center mt-4">Đang tải...</p>;
+
+  const totalReviews = reviews.length;
+  const avgRating =
+    totalReviews > 0
+      ? (
+          reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+        ).toFixed(1)
+      : 0;
 
   return (
-    <Container className="my-5">
-      {addedToCart && (
-        <Alert
-          variant="success"
-          onClose={() => setAddedToCart(false)}
-          dismissible
-        >
-          Đã thêm {product.name} vào giỏ hàng!
-        </Alert>
-      )}
+    <div className="container mt-5">
+      {/* Thông tin sản phẩm */}
+      <div className="row mb-5">
+        <div className="col-md-5">
+          <img
+            src={product.imageUrl}
+            className="img-fluid rounded shadow-sm"
+            alt={product.name}
+          />
+        </div>
+        <div className="col-md-7 d-flex flex-column justify-content-center">
+          <h2 className="fw-bold">{product.name}</h2>
+          <p className="text-muted">{product.description}</p>
+          <h3 className="text-danger fw-bold mb-3">${product.price}</h3>
+          <button
+            className="btn btn-primary btn-lg w-50"
+            onClick={handleAddToCart}
+          >
+            🛒 Thêm vào giỏ
+          </button>
+        </div>
+      </div>
 
-      <Row className="g-4">
-        <Col md={6}>
-          <div className="border rounded p-3 bg-light">
-            <img
-              src={product.imageUrl || "https://via.placeholder.com/500x500"}
-              alt={product.name || "Sản phẩm"}
-              className="img-fluid rounded"
-              style={{
-                maxHeight: "500px",
-                width: "100%",
-                objectFit: "contain",
-              }}
-            />
-          </div>
-        </Col>
+      {/* Đánh giá */}
+      <div className="card shadow-sm">
+        <div className="card-body">
+          <h4 className="mb-4">
+            Đánh giá sản phẩm ({totalReviews}){" "}
+            <span className="badge bg-warning text-dark">⭐ {avgRating}</span>
+          </h4>
 
-        <Col md={6}>
-          <div className="product-details">
-            <h2 className="mb-3">{product.name || "Tên sản phẩm"}</h2>
-
-            <div className="mb-3">
-              <Badge bg={product.inStock ? "success" : "danger"} className="me-2">
-                {product.inStock ? "Còn hàng" : "Hết hàng"}
-              </Badge>
-              <Badge bg="info">Số lượng: {product.quantity ?? 0}</Badge>
-            </div>
-
-            <div className="price-section mb-4">
-              <h3 className="text-danger fw-bold">
-                {product.price
-                  ? product.price.toLocaleString("vi-VN") + "₫"
-                  : "Liên hệ"}
-              </h3>
-              {product.price > 2000000 && (
-                <small className="text-muted text-decoration-line-through">
-                  {(product.price * 1.2).toLocaleString("vi-VN")}₫
-                </small>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <h5>Mô tả sản phẩm</h5>
-              <p className="text-muted">
-                {product.description || "Chưa có mô tả"}
-              </p>
-            </div>
-
-            <div className="rating mb-4">
-              <StarFill className="text-warning" />
-              <StarFill className="text-warning" />
-              <StarFill className="text-warning" />
-              <StarFill className="text-warning" />
-              <StarFill className="text-secondary" />
-              <span className="ms-2">(15 đánh giá)</span>
-            </div>
-
-            <Button
-              variant="success"
-              size="lg"
-              className="me-3"
-              onClick={handleAddToCart}
-              disabled={!product.inStock}
-            >
-              <CartPlus className="me-2" />
-              Thêm vào giỏ hàng
-            </Button>
-
-            <Button variant="outline-primary" size="lg">
-              Mua ngay
-            </Button>
-          </div>
-        </Col>
-      </Row>
-
-      {/* Thông tin bổ sung */}
-      <Row className="mt-5">
-        <Col>
-          <div className="border-top pt-4">
-            <h4>Thông tin chi tiết</h4>
-            <ul className="list-unstyled">
-              <li>
-                <strong>Thương hiệu:</strong>{" "}
-                {product.name ? product.name.split(" ")[0] : "N/A"}
-              </li>
-              <li>
-                <strong>Chất liệu:</strong> Da cao cấp
-              </li>
-              <li>
-                <strong>Màu sắc:</strong> Trắng/Đen
-              </li>
-              <li>
-                <strong>Bảo hành:</strong> 6 tháng
-              </li>
+          {totalReviews > 0 ? (
+            <ul className="list-group mb-4">
+              {reviews.map((r) => (
+                <li key={r.id} className="list-group-item">
+                  <div className="d-flex justify-content-between">
+                    <strong>{r.username}</strong>
+                    <span className="text-warning">
+                      {"⭐".repeat(r.rating)}
+                    </span>
+                  </div>
+                  <p className="mb-1">{r.comment}</p>
+                  <small className="text-muted">
+                    {new Date(r.createdAt).toLocaleString("vi-VN")}
+                  </small>
+                </li>
+              ))}
             </ul>
-          </div>
-        </Col>
-      </Row>
-    </Container>
+          ) : (
+            <p className="text-muted">Chưa có đánh giá nào.</p>
+          )}
+
+          {/* Form gửi đánh giá */}
+          <form onSubmit={handleSubmitReview}>
+            <h5 className="mb-3">Gửi đánh giá của bạn</h5>
+            <div className="mb-3">
+              <label className="form-label">Chọn số sao</label>
+              <select
+                className="form-select w-auto"
+                value={newReview.rating}
+                onChange={(e) =>
+                  setNewReview({ ...newReview, rating: Number(e.target.value) })
+                }
+              >
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <option key={s} value={s}>
+                    {s} sao
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-3">
+              <textarea
+                className="form-control"
+                placeholder="Nhập nhận xét..."
+                value={newReview.comment}
+                onChange={(e) =>
+                  setNewReview({ ...newReview, comment: e.target.value })
+                }
+                required
+              />
+            </div>
+            <button type="submit" className="btn btn-success">
+              Gửi đánh giá
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
   );
 }
 

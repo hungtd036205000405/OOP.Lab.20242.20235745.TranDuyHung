@@ -17,17 +17,21 @@ function Login() {
 
       const result = res.data?.result;
       const token = result?.token;
-      const userId = result?.userid; // Sửa từ userId thành userid để khớp với phản hồi
+      const userId = result?.userid;
       const authenticated = result?.authenticated;
 
       console.log("Token:", token, "UserId:", userId, "Authenticated:", authenticated);
 
-      if (token && userId !== undefined && userId !== null && authenticated) {
-        // Lưu token và userId vào localStorage
+      if (token && userId != null && authenticated) {
+        // Lưu token, userId và username vào localStorage
         localStorage.setItem("token", token);
-        localStorage.setItem("userId", userId); // Lưu trực tiếp, sẽ tự thành chuỗi
-
-        navigate("/", { replace: true }); // Về Home
+        localStorage.setItem("userId", String(userId));
+        localStorage.setItem("username", username);
+        
+        // Dispatch event để thông báo cho Navbar update ngay lập tức
+        window.dispatchEvent(new Event('storage'));
+        
+        navigate("/", { replace: true });
       } else {
         setError("Không nhận được token hoặc userId từ server!");
       }

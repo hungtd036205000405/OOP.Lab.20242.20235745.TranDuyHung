@@ -51,3 +51,22 @@
     display: block;
   }
 }
+
+.nav-user {
+  margin-left: 10px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.btn-logout {
+  background: transparent;
+  border: none;
+  color: #ffdddd;
+  margin-left: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-logout:hover {
+  text-decoration: underline;
+}

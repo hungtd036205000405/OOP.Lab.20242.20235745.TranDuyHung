@@ -3,6 +3,8 @@ package com.example.shoestore.dto.response;
 import jakarta.persistence.Column;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,4 +29,7 @@ public class ProductResponse {
     private boolean inStock;  // Còn hàng hay không (tính từ quantity)
 
     private CategoryResponse category;
+
+    // Danh sách size và stock chi tiết
+    private List<ProductSizeResponse> sizes;
 }

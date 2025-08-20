@@ -40,4 +40,7 @@ public class AdminStatisticController {
             @RequestParam(defaultValue = "5") int limit) {
         return ResponseEntity.ok(statisticService.getRevenueByProduct(limit));
     }
+
+    //====API thêm , sửa xóa sản phẩm, danh mục, người dùng, đơn hàng, giỏ hàng, bình luận====
+
 }

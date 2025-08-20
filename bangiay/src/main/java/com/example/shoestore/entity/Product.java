@@ -3,7 +3,8 @@ package com.example.shoestore.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -14,27 +15,39 @@ import java.math.BigDecimal;
 @Builder
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // hoặc AUTO
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private String name;
+
     private Double price;
+
     private String imageUrl;
 
-    // Thêm các trường mới
-    @Column(nullable = false)// Không cho phép giá trị null
-    private int quantity;  // Số lượng
+    // Tổng số lượng tất cả size (dùng cho các API khác)
+    @Column(nullable = false)
+    private int quantity;
 
     @Column(columnDefinition = "TEXT", nullable = false)
-    private String description;  // Mô tả chi tiết sản phẩm
+    private String description;
 
-
+    // Có hàng hay không (dựa theo quantity hoặc stock các size)
     @Column(nullable = false)
-    private boolean inStock;  // Còn hàng hay không (tính từ quantity)
+    private boolean inStock;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
+    // Danh sách size và stock
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductSize> sizes = new ArrayList<>();
+
+    // Hàm tiện ích để cập nhật tổng quantity từ sizes
+    public void updateQuantityFromSizes() {
+        this.quantity = sizes.stream()
+                .mapToInt(ProductSize::getStock)
+                .sum();
+        this.inStock = this.quantity > 0;
+    }
 }

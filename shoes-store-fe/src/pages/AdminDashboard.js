@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer,
   BarChart, Bar, PieChart, Pie, Cell, Legend
 } from "recharts";
 
 const Dashboard = () => {
+
+  const navigate = useNavigate(); // hook điều hướng
+
+
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [revenueData, setRevenueData] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
@@ -94,8 +99,33 @@ const Dashboard = () => {
     <div className="container-fluid my-4">
       <div className="row">
         <div className="col-12">
+
+          {/* Nút quản lý */}
+          <div className="mb-4 d-flex gap-3">
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => navigate("/admin")}
+            >
+              📊 Quản lý doanh thu 
+            </button>
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => navigate("/admin/manage-products")}
+            >
+              📦 Quản lý sản phẩm
+            </button>
+            <button
+              className="btn btn-outline-success"
+              onClick={() => navigate("/admin/manage-orders")}
+            >
+              🧾 Quản lý đơn hàng
+            </button>
+          </div>
+
+
           <h2 className="mb-4">📊 Admin Dashboard - Thống kê doanh thu</h2>
-          
+
+           
           {/* Panel điều khiển */}
           <div className="card mb-4">
             <div className="card-header">
