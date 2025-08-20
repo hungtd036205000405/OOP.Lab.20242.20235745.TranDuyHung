@@ -34,4 +34,25 @@ public class ProductController {
             return ApiResponse.error(410, "Product not found");
         }
     }
+
+
+    //==================API CATAGORIES=====================
+    // GET /products/category/{categoryId}
+    @GetMapping("/category/{categoryId}")
+    public ApiResponse<List<ProductResponse>> getByCategory(@PathVariable Long categoryId) {
+        return ApiResponse.success(productService.getByCategory(categoryId));
+    }
+
+    // GET /products/search
+    @GetMapping("/search")
+    public ApiResponse<List<ProductResponse>> searchProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) Long categoryId
+    ) {
+        return ApiResponse.success(productService.search(name, minPrice, maxPrice, categoryId));
+    }
+    //===================API CATAGORIES=====================
+
 }

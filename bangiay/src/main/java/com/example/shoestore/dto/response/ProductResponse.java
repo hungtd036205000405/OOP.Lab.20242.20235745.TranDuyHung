@@ -25,4 +25,6 @@ public class ProductResponse {
 
     @Column(name = "inStock", nullable = false)
     private boolean inStock;  // Còn hàng hay không (tính từ quantity)
+
+    private CategoryResponse category;
 }

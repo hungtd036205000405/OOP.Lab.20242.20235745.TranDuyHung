@@ -32,4 +32,9 @@ public class Product {
 
     @Column(nullable = false)
     private boolean inStock;  // Còn hàng hay không (tính từ quantity)
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
 }
